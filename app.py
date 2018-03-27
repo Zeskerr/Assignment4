@@ -42,6 +42,7 @@ class App(tk.Frame):
             q.config(state="enable")
             expression_variables.clear()
             expression.clear()
+            logical_operator.clear()
 
         def add_variable(variable):
             expression_variables.append(variable)
@@ -81,17 +82,20 @@ class App(tk.Frame):
                     truth_values.append(truth_value)
             if(logical_operator[0] == "→"):
                 for i in range(len(firstVar)):
-                    truth_value = firstVar[i] or secondVar[i]
+                    truth_value = not(firstVar[i]) or secondVar[i]
                     truth_values.append(truth_value)
             if(logical_operator[0] == "∧"):
                 for i in range(len(firstVar)):
-                    truth_value = firstVar[i] and secondVar[i]
+                    truth_value = (firstVar[i] and secondVar[i])
                     truth_values.append(truth_value)
             if(logical_operator[0] == "↔"):
                 for i in range(len(firstVar)):
-                    truth_value = firstVar[i] or secondVar[i]
+                    truth_value = ((firstVar[i] and secondVar[i]) or ((not(firstVar[i])) and (not(secondVar[i]))))
                     truth_values.append(truth_value)
             draw_truth_table(firstVar, secondVar, truth_values)
+            truth_values.clear()
+            firstVar.clear()
+            secondVar.clear()
 
 
         p = ttk.Button(text="P", command=lambda: add_variable("P"))
