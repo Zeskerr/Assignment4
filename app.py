@@ -43,6 +43,7 @@ class App(tk.Frame):
             expression_variables.clear()
             expression.clear()
             logical_operator.clear()
+            clear_textBox()
 
         def add_variable(variable):
             expression_variables.append(variable)
@@ -53,7 +54,8 @@ class App(tk.Frame):
 
         def add_operator(operator):
             expression.append(operator)
-            logical_operator.append(operator)
+            if(operator != "¬"):
+                logical_operator.append(operator)
 
         def draw_truth_table(p, q, preposition):
             for i in range(len(expression_variables)):
@@ -67,14 +69,28 @@ class App(tk.Frame):
                 third_textbox.insert(END, "%s     " % q[i])
                 third_textbox.insert(END, "|  %s  \n" % preposition[i])
 
+        def clear_textBox():
+            third_textbox.delete("1.0", END)
+
         def calculate():
+            print(expression)
             if(expression_variables[0] == expression_variables[1]):
                 firstVar = [True, False]
                 secondVar = [False, True]
-                print(firstVar, secondVar)
             else:
                 firstVar = [True, True, False, False]
                 secondVar = [True, False, True, False]
+            if((expression[0] == "¬") and ((expression[1] == "P" or expression[1] == "Q"))):
+                print("Entered if")
+                for i in range(len(firstVar)):
+                    firstVar[i] = not(firstVar[i])
+            if((expression[2] == "¬") and ((expression[3] == "P" or expression[3] == "Q"))):
+                print("Entered if 2")
+                for i in range(len(secondVar)):
+                    secondVar[i] = not(secondVar[i])
+
+            print(firstVar)
+            print(secondVar)
             truth_values = []
             if(logical_operator[0] == "V"):
                 for i in range(len(firstVar)):
@@ -92,15 +108,22 @@ class App(tk.Frame):
                 for i in range(len(firstVar)):
                     truth_value = ((firstVar[i] and secondVar[i]) or ((not(firstVar[i])) and (not(secondVar[i]))))
                     truth_values.append(truth_value)
+            if(logical_operator[0] == "⊕"):
+                for i in range(len(firstVar)):
+                    truth_value = firstVar[i] != secondVar[i]
+                    truth_values.append(truth_value)
+
             draw_truth_table(firstVar, secondVar, truth_values)
             truth_values.clear()
             firstVar.clear()
             secondVar.clear()
-
+            expression.clear()
+            expression_variables.clear()
+            logical_operator.clear()
 
         p = ttk.Button(text="P", command=lambda: add_variable("P"))
         q = ttk.Button(text="Q",command=lambda: add_variable("Q"))
-        negation = ttk.Button(text="¬")
+        negation = ttk.Button(text="¬", command=lambda: add_operator("¬"))
         disjunction = ttk.Button(text="V", command=lambda:[disable_buttons(), add_operator("V")])
         implication = ttk.Button(text="→", command=lambda:[disable_buttons(), add_operator("→")])
         conjunction = ttk.Button(text="∧", command=lambda:[disable_buttons(), add_operator("∧")])
@@ -110,7 +133,7 @@ class App(tk.Frame):
         calculate = ttk.Button(text="Calculate", command=calculate)
         third_textbox = Text(width=125, height=35, bg='#f5f5dc')
 
-        prepositions = [negation, disjunction, implication, conjunction, xclusiveOr, biconditional]
+        prepositions = [disjunction, implication, conjunction, xclusiveOr, biconditional]
 
         p.grid(padx=5, row=2, column=1)
         q.grid(row=2, column=2)
@@ -123,7 +146,6 @@ class App(tk.Frame):
         reset.grid(row=6, column=1)
         calculate.grid(row=6, column=2)
         third_textbox.grid(row=1, column=4, rowspan=50, columnspan=50, pady=5, padx=10)
-
 
 assigment = App()
 assigment.mainloop()
